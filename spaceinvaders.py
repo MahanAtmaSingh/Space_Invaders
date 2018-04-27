@@ -642,7 +642,8 @@ class SpaceInvaders(object):
 			display.update()
 			self.clock.tick(60)
 				
+# The main object
+game = SpaceInvaders()
 
 if __name__ == '__main__':
-	game = SpaceInvaders()
 	game.main()
