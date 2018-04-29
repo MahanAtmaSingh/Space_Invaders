@@ -85,7 +85,7 @@ class Enemy(sprite.Sprite):
 			if self.moveNumber >= self.rightMoves and self.direction == 1:
 				self.direction *= -1
 				self.moveNumber = 0
-				self.rect.y += 35
+				self.rect.y += game.enemyMovementDistance
 				self.movedY = True
 				if self.addRightMoves:
 					self.rightMoves += self.numOfRightMoves
@@ -96,7 +96,7 @@ class Enemy(sprite.Sprite):
 			if self.moveNumber >= self.leftMoves and self.direction == -1:
 				self.direction *= -1
 				self.moveNumber = 0
-				self.rect.y += 35
+				self.rect.y += game.enemyMovementDistance
 				self.movedY = True
 				if self.addLeftMoves:
 					self.leftMoves += self.numOfLeftMoves
@@ -293,6 +293,15 @@ class SpaceInvaders(object):
 		self.enemyPositionStart = self.enemyPositionDefault
 		# Current enemy starting position
 		self.enemyPosition = self.enemyPositionStart
+		self.showBumpers = True
+		self.goalStayAlive = False
+		self.enemyMovementDistance = 35
+
+	def setMachineLearning( self, showBumpers, goalStayAlive ):
+		self.showBumpers = showBumpers
+		self.goalStayAlive = goalStayAlive
+		if( self.goalStayAlive ):
+			enemyMovementDistance = 0
 
 	def reset(self, score, lives, newGame=False):
 		self.player = Ship()
@@ -306,7 +315,7 @@ class SpaceInvaders(object):
 		self.enemyPosition = self.enemyPositionStart
 		self.make_enemies()
 		# Only create blockers on a new game, not a new round
-		if newGame:
+		if (newGame and self.showBumpers):
 			self.allBlockers = sprite.Group(self.make_blockers(0), self.make_blockers(1), self.make_blockers(2), self.make_blockers(3))
 		self.keys = key.get_pressed()
 		self.clock = time.Clock()
@@ -412,7 +421,7 @@ class SpaceInvaders(object):
 			for column in range(10):
 				enemy = Enemy(row, column)
 				enemy.rect.x = 157 + (column * 50)
-				enemy.rect.y = self.enemyPosition + (row * 45)
+				enemy.rect.y = self.enemyPosition + (row * 45) # Screen has the origin in upper left
 				enemies.add(enemy)
 		
 		self.enemies = enemies
@@ -554,9 +563,10 @@ class SpaceInvaders(object):
 			self.gameOver = True
 			self.startGame = False
 
-		sprite.groupcollide(self.bullets, self.allBlockers, True, True)
-		sprite.groupcollide(self.enemyBullets, self.allBlockers, True, True)
-		sprite.groupcollide(self.enemies, self.allBlockers, False, True)
+		if(game.showBumpers):
+			sprite.groupcollide(self.bullets, self.allBlockers, True, True)
+			sprite.groupcollide(self.enemyBullets, self.allBlockers, True, True)
+			sprite.groupcollide(self.enemies, self.allBlockers, False, True)
 
 	def create_new_ship(self, createShip, currentTime):
 		if createShip and (currentTime - self.shipTimer > 900):
@@ -610,7 +620,7 @@ class SpaceInvaders(object):
 						self.check_input()
 					if currentTime - self.gameTimer > 3000:
 						# Move enemies closer to bottom
-						self.enemyPositionStart += 35
+						self.enemyPositionStart += self.enemyMovementDistance
 						self.reset(self.score, self.lives)
 						self.make_enemies()
 						self.gameTimer += 3000
@@ -618,7 +628,8 @@ class SpaceInvaders(object):
 					currentTime = time.get_ticks()
 					self.play_main_music(currentTime)              
 					self.screen.blit(self.background, (0,0))
-					self.allBlockers.update(self.screen)
+					if(game.showBumpers):
+						self.allBlockers.update(self.screen)
 					self.scoreText2 = Text(FONT, 20, str(self.score), GREEN, 85, 5)
 					self.scoreText.draw(self.screen)
 					self.scoreText2.draw(self.screen)
