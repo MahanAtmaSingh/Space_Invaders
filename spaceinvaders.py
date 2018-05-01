@@ -301,7 +301,7 @@ class SpaceInvaders(object):
 		self.showBumpers = showBumpers
 		self.goalStayAlive = goalStayAlive
 		if( self.goalStayAlive ):
-			enemyMovementDistance = 0
+			self.enemyMovementDistance = 0
 
 	def reset(self, score, lives, newGame=False):
 		self.player = Ship()
