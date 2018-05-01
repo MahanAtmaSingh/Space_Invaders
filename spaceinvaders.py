@@ -303,6 +303,9 @@ class SpaceInvaders(object):
 		if( self.goalStayAlive ):
 			self.enemyMovementDistance = 0
 
+	def createGameStatusData():
+		return True
+
 	def reset(self, score, lives, newGame=False):
 		self.player = Ship()
 		self.playerGroup = sprite.Group(self.player)
