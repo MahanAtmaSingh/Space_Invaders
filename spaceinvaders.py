@@ -296,6 +296,9 @@ class SpaceInvaders(object):
         self.showBumpers = True
         self.goalStayAlive = False
         self.enemyMovementDistance = 35
+        self.bulletNumberMax = 7
+        self.enemyBulletData = []
+        self.shipPositions = []
 
     def setMachineLearning( self, showBumpers, goalStayAlive ):
         self.showBumpers = showBumpers
@@ -303,8 +306,14 @@ class SpaceInvaders(object):
         if( self.goalStayAlive ):
             self.enemyMovementDistance = 0
 
-    def createGameStatusData():
-        return True
+    def getGameStatusData(self):
+        bulletsList = []
+        for enemyBullet in self.enemyBullets:
+            bulletsList.append( enemyBullet.rect.x )
+            bulletsList.append( enemyBullet.rect.y )
+        
+        shipCoordinates = [ self.player.rect.x, self.player.rect.y ]    
+        return shipCoordinates, bulletsList 
 
     def reset(self, score, lives, newGame=False):
         self.player = Ship()
@@ -483,6 +492,8 @@ class SpaceInvaders(object):
         for e in event.get():
             if e.type == QUIT:
                 sys.exit()
+                # if len(self.shipPositions) > 0:
+                #    self.createLabels()
             if e.type == KEYUP:
                 self.startGame = True
                 self.mainScreen = False
@@ -597,6 +608,7 @@ class SpaceInvaders(object):
                 sys.exit()
 
     def main(self):
+
         while True:
             if self.mainScreen:
                 self.reset(0, 3, True)
@@ -610,6 +622,9 @@ class SpaceInvaders(object):
                 self.create_main_menu()
 
             elif self.startGame:
+                self.enemyBulletData = []
+                self.shipPositions = []
+
                 if len(self.enemies) == 0:
                     currentTime = time.get_ticks()
                     if currentTime - self.gameTimer < 3000:              
@@ -646,6 +661,10 @@ class SpaceInvaders(object):
 
                     if len(self.enemies) > 0:
                         self.make_enemies_shoot()
+
+                    shipPosition, enemyBullets = self.getGameStatusData()
+                    self.enemyBulletData.append( enemyBullets )
+                    self.shipPositions.append( shipPosition )
     
             elif self.gameOver:
                 currentTime = time.get_ticks()
