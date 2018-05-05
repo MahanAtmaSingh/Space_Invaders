@@ -492,8 +492,6 @@ class SpaceInvaders(object):
         for e in event.get():
             if e.type == QUIT:
                 sys.exit()
-                # if len(self.shipPositions) > 0:
-                #    self.createLabels()
             if e.type == KEYUP:
                 self.startGame = True
                 self.mainScreen = False
